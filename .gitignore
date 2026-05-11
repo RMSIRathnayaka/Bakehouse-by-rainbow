@@ -1,0 +1,19 @@
+# React Frontend
+frontend/node_modules/
+frontend/build/
+
+# Python Backend
+backend/venv/
+backend/__pycache__/
+*.pyc
+
+# Environment files
+.env
+frontend/.env
+backend/.env
+
+# VS Code
+.vscode/
+
+# Database
+backend/db.sqlite3
