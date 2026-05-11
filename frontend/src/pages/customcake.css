@@ -1,0 +1,147 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #f4f4f4;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 25px;
+  background: #f8e6ef;
+
+}
+
+.top-bar button{
+  padding: 8px 15px;
+  background: #7a1f57;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+
+}
+
+/* HEADER */
+.header {
+  background: #e6c3d2;
+  padding: 18px 40px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #7a1f57;
+}
+
+/* MAIN WRAPPER */
+.wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* CARD */
+.card {
+  width: 100%;
+  max-width: 1100px;
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* GRID LAYOUT */
+.main-container {
+  display: flex;
+  gap: 40px;
+}
+
+/* LEFT UPLOAD */
+.left-box {
+  width: 280px;
+  height: 320px;
+  background: #f3d7e2;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.left-box h3 {
+  color: #7a1f57;
+  margin-bottom: 10px;
+}
+
+.left-box input {
+  margin-top: 10px;
+}
+
+.left-box img {
+  margin-top: 10px;
+  border-radius: 10px;
+}
+
+/* FORM */
+.form-area {
+  flex: 1;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* INPUT GROUP */
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  font-size: 14px;
+  color: #7a1f57;
+  margin-bottom: 5px;
+}
+
+/* INPUT STYLE */
+input, select, textarea {
+  padding: 10px;
+  border: 1.5px solid #c57aa5;
+  border-radius: 6px;
+  outline: none;
+  transition: 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #7a1f57;
+}
+
+/* TEXTAREA */
+textarea {
+  height: 80px;
+}
+
+/* BUTTON */
+.submit-btn {
+  margin-top: 25px;
+  padding: 12px;
+  width: 200px;
+  background: #7a1f57;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.submit-btn:hover {
+  background: #5c1441;
+}
+
+/* BOOKED DATE */
+.booked-date {
+  background: #e74c3c !important;
+  color: white !important;
+  border-radius: 50%;
+  pointer-events: none;
+}

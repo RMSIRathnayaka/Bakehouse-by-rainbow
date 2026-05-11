@@ -1,0 +1,174 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background: #f8dce6;
+}
+
+.logo h2 {
+  margin: 0;
+  color: #7a1f57;
+}
+
+.logo p {
+  font-size: 12px;
+  margin: 0;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 25px;
+}
+
+.nav-links li {
+  cursor: pointer;
+}
+
+.active {
+  color: #7a1f57;
+  font-weight: bold;
+}
+
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #eabccc;
+  padding: 6px 10px;
+  border-radius: 20px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.icon {
+  font-size: 20px;
+  color: #7a1f57;
+  cursor: pointer;
+}
+
+/* HERO */
+.hero {
+  height: 500px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  padding-left: 80px;
+}
+
+.hero-overlay {
+  color: black;
+}
+
+.hero-text h1 {
+  font-size: 45px;
+}
+
+.hero-text span {
+  color: #d94b8a;
+}
+
+.hero-buttons {
+  margin-top: 20px;
+}
+
+.btn-primary {
+  background: #7a1f57;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  margin-right: 10px;
+}
+
+.btn-outline {
+  border: 2px solid #7a1f57;
+  background: transparent;
+  padding: 10px 20px;
+}
+
+.hero-image img {
+  width: 450px;
+}
+
+.hero-image {
+  width: 400px;
+  height: 350px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 15px;
+}
+
+/* FEATURES */
+.features {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  background: #fff0f6;
+}
+
+/* PRODUCTS */
+.products {
+  padding: 40px;
+  text-align: center;
+}
+
+.product-grid {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  width: 200px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.card img {
+  width: 100%;
+}
+
+.card button {
+  background: #7a1f57;
+  color: white;
+  border: none;
+  padding: 8px;
+}
+
+/* CTA */
+.cta {
+  background: #ffe6ef;
+  padding: 50px;
+  text-align: center;
+}
+
+/* FOOTER */
+.footer {
+  display: flex;
+  justify-content: space-around;
+  background: #3b0f2f;
+  color: white;
+  padding: 40px;
+}
+
+.footer-section {
+  max-width: 200px;
+}
