@@ -22,14 +22,20 @@ from core.views import ProductViewSet, OrderViewSet
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
 )
 from core.views import RegisterView
 from core.views import CartViewSet
 from django.http import HttpResponse
 from core.views import CustomCakeViewSet
-from core.views import get_profile
+from core.views import chatbot_reply, get_profile, EmailTokenObtainPairView
+from core.views import (
+    AdminCustomCakeViewSet,
+    AdminDashboardViewSet,
+    AdminOrderViewSet,
+    AdminUserViewSet,
+    ContactMessageViewSet,
+)
 
 
 router = DefaultRouter()
@@ -37,18 +43,23 @@ router.register(r'products', ProductViewSet)
 router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'cart', CartViewSet, basename='cart')
 router.register(r'custom-cakes', CustomCakeViewSet, basename='customcake')
+router.register(r'contacts', ContactMessageViewSet, basename='contact')
+router.register(r'admin/dashboard', AdminDashboardViewSet, basename='admin-dashboard')
+router.register(r'admin/users', AdminUserViewSet, basename='admin-users')
+router.register(r'admin/orders', AdminOrderViewSet, basename='admin-orders')
+router.register(r'admin/custom-cakes', AdminCustomCakeViewSet, basename='admin-custom-cakes')
 
 urlpatterns = [
     path('', lambda request: HttpResponse("Bakehouse API is running!")),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/', include(router.urls)),
     path('api/profile/', get_profile),
+    path('api/chatbot/', chatbot_reply),
 
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
-path('api/register/', RegisterView.as_view(), name='register'),
+    path('api/register/', RegisterView.as_view(), name='register'),
 ]
 
 if settings.DEBUG:
