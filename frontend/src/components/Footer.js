@@ -1,40 +1,64 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { FaFacebookF, FaWhatsapp } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
+import logo from "../assets/bakehouse-logo.svg";
 import "./footer.css";
 
 function Footer() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const goToSection = (sectionId) => {
+    if (location.pathname !== "/") {
+      navigate(`/#${sectionId}`);
+      return;
+    }
+
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.replaceState(null, "", `/#${sectionId}`);
+    }
+  };
 
   return (
-    <div className="footer">
-
-      <div className="footer-section">
-        <h3>BakeHouse</h3>
-        <p>We create delicious cakes for every celebration.</p>
+    <footer className="footer" id="footer">
+      <div className="footer-section footer-brand">
+        <img src={logo} alt="Bake House by Rainbow" />
+        <div>
+          <h3>Bake House by Rainbow</h3>
+          <p>Elegance in every bite. Custom celebration cakes, fresh bakes, and reliable ordering support.</p>
+        </div>
       </div>
 
       <div className="footer-section">
         <h4>Quick Links</h4>
-        <p onClick={() => navigate("/")}>Home</p>
-        <p>Cakes</p>
+        <p onClick={() => goToSection("home")}>Home</p>
+        <p onClick={() => navigate("/cakes")}>Items</p>
         <p onClick={() => navigate("/custom")}>Custom Cake</p>
-        <p onClick={() => navigate("/orders")}>My Orders</p>
+        <p onClick={() => navigate("/cart")}>Cart</p>
       </div>
 
       <div className="footer-section">
-        <h4>Customer Service</h4>
-        <p>FAQ</p>
+        <h4>About</h4>
+        <p onClick={() => goToSection("about")}>About Us</p>
         <p>Delivery Info</p>
         <p>Privacy Policy</p>
       </div>
 
       <div className="footer-section">
         <h4>Contact</h4>
-        <p>+94 123 456 789</p>
+        <a href="https://wa.me/94717100135" target="_blank" rel="noreferrer">
+          <FaWhatsapp />
+          <span>+94 71 710 0135</span>
+        </a>
+        <a href="https://www.facebook.com/share/18mQKyZCVV/" target="_blank" rel="noreferrer">
+          <FaFacebookF />
+          <span>Facebook</span>
+        </a>
         <p>info@bakehouse.com</p>
       </div>
-
-    </div>
+    </footer>
   );
 }
 

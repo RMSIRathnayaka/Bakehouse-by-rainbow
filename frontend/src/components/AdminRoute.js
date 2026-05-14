@@ -2,16 +2,16 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import { getUserRole, hasSession } from "../utils/session";
 
-function ProtectedRoute({ children }) {
+function AdminRoute({ children }) {
   if (!hasSession()) {
     return <Navigate to="/login" replace />;
   }
 
-  if (getUserRole() === "admin") {
-    return <Navigate to="/admin-panel" replace />;
+  if (getUserRole() !== "admin") {
+    return <Navigate to="/" replace />;
   }
 
   return children;
 }
 
-export default ProtectedRoute;
+export default AdminRoute;

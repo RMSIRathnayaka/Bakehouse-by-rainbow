@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Bake House by Rainbow logo">
+  <defs>
+    <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f2dfaa"/>
+      <stop offset="0.52" stop-color="#c8aa64"/>
+      <stop offset="1" stop-color="#8f7134"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="256" fill="#151515"/>
+  <circle cx="256" cy="256" r="238" fill="#222" stroke="url(#gold)" stroke-width="12"/>
+  <circle cx="256" cy="256" r="220" fill="none" stroke="url(#gold)" stroke-width="3"/>
+  <path d="M186 166a70 70 0 0 1 140 0" fill="none" stroke="url(#gold)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M210 166a46 46 0 0 1 92 0" fill="none" stroke="url(#gold)" stroke-width="14" stroke-linecap="round"/>
+  <path d="M232 166a24 24 0 0 1 48 0" fill="none" stroke="url(#gold)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M256 56l18 32 36 6-26 26 6 36-34-17-34 17 6-36-26-26 36-6z" fill="url(#gold)"/>
+  <text x="256" y="245" text-anchor="middle" fill="url(#gold)" font-family="Georgia, serif" font-size="58" font-weight="700" letter-spacing="3">BAKE HOUSE</text>
+  <text x="180" y="314" text-anchor="middle" fill="url(#gold)" font-family="Georgia, serif" font-size="34" font-weight="700">by</text>
+  <text x="300" y="326" text-anchor="middle" fill="url(#gold)" font-family="Georgia, serif" font-size="70" font-weight="700">Rainbow</text>
+  <path d="M188 372h136" stroke="url(#gold)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M224 365c8-23 55-23 64 0 8 20-7 54-32 54s-40-34-32-54z" fill="none" stroke="url(#gold)" stroke-width="7"/>
+  <path d="M236 362c6-14 34-14 40 0" fill="none" stroke="url(#gold)" stroke-width="6" stroke-linecap="round"/>
+  <text x="256" y="452" text-anchor="middle" fill="url(#gold)" font-family="Georgia, serif" font-size="28" font-weight="700" letter-spacing="2">ELEGANCE IN EVERY BITE</text>
+</svg>
