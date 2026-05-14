@@ -11,3 +11,17 @@ Bakehouse by Rainbow is a full-stack bakery management and online ordering syste
 - Responsive frontend UI
 - Backend API integration
 - Database management
+
+## Technologies Used
+
+### Frontend
+
+- React.js
+- HTML
+- CSS
+- JavaScript
+
+### Backend
+
+- Python
+- Django / Django REST Framework
