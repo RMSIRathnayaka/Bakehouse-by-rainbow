@@ -1,0 +1,177 @@
+.cakes-page {
+  min-height: 100vh;
+}
+
+.cakes-shell {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: clamp(36px, 6vw, 72px) clamp(18px, 4vw, 28px) 88px;
+}
+
+.cakes-hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+
+.cakes-hero > div,
+.cakes-search,
+.cakes-empty,
+.cakes-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(143, 47, 85, 0.1);
+  box-shadow: var(--shadow-sm);
+}
+
+.cakes-hero > div,
+.cakes-search,
+.cakes-empty {
+  border-radius: var(--radius-lg);
+}
+
+.cakes-hero > div {
+  padding: clamp(28px, 4vw, 38px);
+}
+
+.cakes-hero p,
+.cakes-search span,
+.cakes-card-copy span {
+  margin: 0 0 10px;
+  color: var(--color-berry);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cakes-hero h1 {
+  margin: 0;
+  color: var(--color-berry-dark);
+  font-size: clamp(42px, 6vw, 68px);
+  line-height: 0.98;
+}
+
+.cakes-hero > div > span {
+  display: block;
+  margin-top: 16px;
+  color: var(--color-muted);
+  font-family: "Segoe UI", sans-serif;
+  line-height: 1.7;
+}
+
+.cakes-search {
+  display: grid;
+  gap: 10px;
+  padding: 24px;
+}
+
+.cakes-search span {
+  margin: 0;
+}
+
+.cakes-search input {
+  min-height: 50px;
+  padding: 0 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  outline: 0;
+}
+
+.cakes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 22px;
+}
+
+.cakes-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+.cakes-card img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.cakes-card-body {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+}
+
+.cakes-card-copy span {
+  display: inline-block;
+}
+
+.cakes-card-copy h2 {
+  margin: 0;
+  color: var(--color-berry-dark);
+  font-size: 28px;
+  line-height: 1.08;
+}
+
+.cakes-card-copy p {
+  margin: 12px 0 0;
+  color: var(--color-muted);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.cakes-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cakes-card-footer strong {
+  color: var(--color-berry-dark);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 18px;
+}
+
+.cakes-card-footer button {
+  min-height: 38px;
+  padding: 0 14px;
+  color: #fff;
+  background: var(--color-berry-dark);
+  border: 1px solid var(--color-berry-dark);
+  border-radius: 999px;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cakes-empty {
+  padding: 32px;
+  color: var(--color-muted);
+  font-family: "Segoe UI", sans-serif;
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .cakes-shell {
+    padding-top: 34px;
+    padding-bottom: 58px;
+  }
+
+  .cakes-hero h1 {
+    font-size: clamp(38px, 14vw, 50px);
+  }
+
+  .cakes-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cakes-card-footer button {
+    width: 100%;
+  }
+}

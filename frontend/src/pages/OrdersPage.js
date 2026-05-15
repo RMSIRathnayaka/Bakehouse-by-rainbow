@@ -1,111 +1,152 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import api, { getImageUrl } from "../utils/api";
 import "./orders.css";
-import { useNavigate } from "react-router-dom";
+
+const PAYMENT_LABELS = {
+  cod: "Cash on delivery",
+  pickup: "Pickup",
+  online: "Online payment",
+};
 
 function OrdersPage() {
   const [orders, setOrders] = useState([]);
-  const navigate = useNavigate();
+  const [customOrders, setCustomOrders] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem("access");
-
-    if (!token) {
-      alert("Please login first");
-      navigate("/login");
-      return;
-    }
-
-    // 🔥 MOVED INSIDE useEffect (fixes warning)
     const fetchOrders = async () => {
       try {
-        const res = await axios.get(
-          "http://127.0.0.1:8000/api/orders/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const [ordersRes, customRes] = await Promise.all([
+          api.get("/api/orders/"),
+          api.get("/api/custom-cakes/"),
+        ]);
 
-        console.log("Orders response:", res.data);
-
-        setOrders(res.data);
-
-      } catch (err) {
-        console.error("Error fetching orders:", err);
-
-        if (err.response) {
-          console.log("Backend error:", err.response.data);
-
-          if (err.response.status === 401) {
-            alert("Session expired. Please login again.");
-            navigate("/login");
-          }
-        }
+        setOrders(ordersRes.data || []);
+        setCustomOrders(customRes.data || []);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
       }
     };
 
     fetchOrders();
+  }, []);
 
-  }, [navigate]);
+  const statusLabel = (value) => (value || "pending").replaceAll("_", " ");
+  const paymentLabel = (value) => PAYMENT_LABELS[value] || statusLabel(value);
+  const hasAnyOrder = orders.length > 0 || customOrders.length > 0;
 
   return (
     <>
       <Navbar />
 
-      <div className="orders-page">
-        <h2 className="title">My Orders</h2>
+      <main className="orders-page">
+        <header className="orders-header">
+          <p>Order history</p>
+          <h1>My Orders</h1>
+        </header>
 
-        {orders.length === 0 ? (
-          <p className="empty">No orders yet 😔</p>
+        {!hasAnyOrder ? (
+          <section className="empty-state">
+            <h2>No orders yet</h2>
+            <p>Your submitted item orders and custom requests will appear here.</p>
+          </section>
         ) : (
-          <div className="orders-grid">
-
-            {orders.map((order) => (
-              <div className="order-card" key={order.id}>
-
-                {/* HEADER */}
-                <div className="order-header">
-                  <h3>Order #{order.id}</h3>
-                  <span className="status pending">Pending</span>
-                </div>
-
-                {/* DATES */}
-                <div className="order-info">
-                  <p><strong>Order Date:</strong> {order.order_date}</p>
-
-                  {order.delivery_date && (
-                    <p className="delivery">
-                      <strong>Delivery:</strong> {order.delivery_date}
-                    </p>
-                  )}
-
-                  <p><strong>Payment:</strong> {order.payment_method}</p>
-                </div>
-
-                {/* ITEMS */}
-                <div className="items">
-                  {order.items && order.items.length > 0 ? (
-                    order.items.map((item, i) => (
-                      <div className="item" key={i}>
-                        <span>{item.product?.name || "Cake"}</span>
-                        <span className="qty">x{item.quantity}</span>
+          <>
+            <section className="orders-section">
+              <h2>Standard Orders</h2>
+              {orders.length === 0 ? (
+                <p className="section-empty">No standard checkout orders yet.</p>
+              ) : (
+                <div className="orders-grid">
+                  {orders.map((order) => (
+                    <article className="order-card" key={`std-${order.id}`}>
+                      <div className="order-header">
+                        <div>
+                          <span>Order</span>
+                          <h3>#{order.id}</h3>
+                        </div>
+                        <span className={`status ${order.status}`}>{statusLabel(order.status)}</span>
                       </div>
-                    ))
-                  ) : (
-                    <p>No items found</p>
-                  )}
+
+                      <div className="order-info">
+                        <p><strong>Placed:</strong> {order.created_at?.slice(0, 10) || order.order_date}</p>
+                        <p className="delivery"><strong>Delivery:</strong> {order.delivery_date}</p>
+                        <p><strong>Contact:</strong> {order.customer_name}</p>
+                        <p><strong>Telephone:</strong> {order.customer_phone}</p>
+                        <p><strong>Address:</strong> {order.customer_address}</p>
+                        <p><strong>Email:</strong> {order.customer_email}</p>
+                        <p><strong>Payment:</strong> {paymentLabel(order.payment_method)}</p>
+                        <p><strong>Payment Status:</strong> {statusLabel(order.payment_status)}</p>
+                        <p><strong>Total:</strong> Rs. {order.total_amount || 0}</p>
+                        <p><strong>Notes:</strong> {order.notes || "None"}</p>
+                      </div>
+
+                      <div className="items">
+                        {order.items?.length ? (
+                          order.items.map((item) => (
+                            <div className="item" key={item.id}>
+                              <span>{item.product_name || item.product_detail?.name || "Cake"} x{item.quantity}</span>
+                              <span className="qty">Rs. {item.line_total || item.unit_price || 0}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No items found</p>
+                        )}
+                      </div>
+                    </article>
+                  ))}
                 </div>
+              )}
+            </section>
 
-              </div>
-            ))}
+            <section className="orders-section">
+              <h2>Custom Cake Orders</h2>
+              {customOrders.length === 0 ? (
+                <p className="section-empty">No custom cake requests yet.</p>
+              ) : (
+                <div className="orders-grid">
+                  {customOrders.map((order) => (
+                    <article className="order-card" key={`custom-${order.id}`}>
+                      <div className="order-header">
+                        <div>
+                          <span>Custom Request</span>
+                          <h3>#{order.id}</h3>
+                        </div>
+                        <span className={`status ${order.status}`}>{statusLabel(order.status)}</span>
+                      </div>
 
-          </div>
+                      {order.image && (
+                        <img className="custom-order-image" src={getImageUrl(order.image)} alt="Custom cake" />
+                      )}
+
+                      <div className="order-info">
+                        <p><strong>Placed:</strong> {order.created_at?.slice(0, 10) || "-"}</p>
+                        <p><strong>Occasion:</strong> {order.occasion}</p>
+                        <p><strong>Flavor:</strong> {order.flavor}</p>
+                        <p><strong>Size:</strong> {order.cake_size}</p>
+                        <p><strong>Quantity:</strong> {order.quantity}</p>
+                        <p className="delivery"><strong>Delivery:</strong> {order.delivery_date}</p>
+                        <p><strong>Contact:</strong> {order.customer_name}</p>
+                        <p><strong>Telephone:</strong> {order.customer_phone}</p>
+                        <p><strong>Address:</strong> {order.customer_address}</p>
+                        <p><strong>Email:</strong> {order.customer_email}</p>
+                        <p><strong>Payment Status:</strong> {statusLabel(order.payment_status)}</p>
+                      </div>
+
+                      <div className="items">
+                        <p><strong>Design:</strong> {order.color} | {order.shape}</p>
+                        <p><strong>Message:</strong> {order.message || "None"}</p>
+                        <p><strong>Special Instructions:</strong> {order.special_instructions || "None"}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
         )}
-      </div>
+      </main>
 
       <Footer />
     </>

@@ -1,14 +1,16 @@
 import React, { useState } from "react";
-import axios from "axios";
 import "./login.css";
 import { useNavigate } from "react-router-dom";
+import { FaEnvelope, FaLock } from "react-icons/fa";
 import cakeImg from "../../assets/cake.jpg";
+import api from "../../utils/api";
+import { saveSession } from "../../utils/session";
 
 function LoginPage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -24,98 +26,91 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // simple validation
-    if (!form.username || !form.password) {
-      alert("Please enter username and password");
+    if (!form.email || !form.password) {
+      alert("Please enter email and password");
       return;
     }
 
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/token/",
-        {
-          username: form.username,
-          password: form.password,
-        }
-      );
+      const res = await api.post("/api/token/", {
+        email: form.email,
+        password: form.password,
+      });
 
-      // ✅ SAVE TOKENS (VERY IMPORTANT)
-      localStorage.setItem("access", res.data.access);
-      localStorage.setItem("refresh", res.data.refresh);
+      saveSession({
+        access: res.data.access,
+        refresh: res.data.refresh,
+        email: res.data.email || form.email,
+        display_name: res.data.display_name || res.data.email || form.email,
+        role: res.data.role || "customer",
+      });
 
-      // optional
-      localStorage.setItem("username", form.username);
-
-      alert("Login successful!");
-
-      // 🔥 REDIRECT TO HOME (BETTER UX)
-      navigate("/");
+      const userRole = res.data.role || "customer";
+      navigate(userRole === "admin" ? "/admin-panel" : "/");
 
     } catch (error) {
       console.error(error);
-      alert("Invalid username or password");
+      alert("Invalid email or password");
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="container">
-
-      {/* LEFT SIDE */}
-      <div className="left">
-        <div className="form-box">
-
+    <main className="auth-page">
+      <section className="auth-panel">
+        <div className="auth-card">
+          <p className="auth-kicker">Welcome back</p>
           <h1>Sign In</h1>
+          <p className="auth-copy">Access your orders, profile, and custom cake requests.</p>
 
           <form onSubmit={handleSubmit}>
+            <label className="auth-field">
+              <span>Email</span>
+              <div className="auth-input">
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={form.email}
+                  onChange={handleChange}
+                />
+                <FaEnvelope />
+              </div>
+            </label>
 
-            <div className="input-group">
-              <input
-                type="text"
-                name="username"
-                placeholder="User Name"
-                value={form.username}
-                onChange={handleChange}
-              />
-              <span>👤</span>
-            </div>
+            <label className="auth-field">
+              <span>Password</span>
+              <div className="auth-input">
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  value={form.password}
+                  onChange={handleChange}
+                />
+                <FaLock />
+              </div>
+            </label>
 
-            <div className="input-group">
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={form.password}
-                onChange={handleChange}
-              />
-              <span>🔒</span>
-            </div>
-
-            <button className="btn" disabled={loading}>
+            <button className="auth-submit" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </button>
-
           </form>
 
-          <p className="bottom-text">
+          <p className="auth-bottom-text">
             Don't have an account?{" "}
-            <span onClick={() => navigate("/register")}>
-              Go to register
-            </span>
+            <span onClick={() => navigate("/register")}>Go to register</span>
           </p>
-
         </div>
-      </div>
+      </section>
 
-      {/* RIGHT SIDE */}
-      <div className="right">
-        <img src={cakeImg} alt="cake" />
-      </div>
-
-    </div>
+      <section className="auth-media">
+        <img src={cakeImg} alt="Decorated cake" />
+      </section>
+    </main>
   );
 }
 

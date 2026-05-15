@@ -1,129 +1,139 @@
 import React, { useState } from "react";
-import axios from "axios";
-import "./register.css";
-import cakeImg from "../../assets/cake.jpg";
 import { useNavigate } from "react-router-dom";
+import cakeImg from "../../assets/cake.jpg";
+import api from "../../utils/api";
+import "./register.css";
 
 function RegisterPage() {
   const navigate = useNavigate();
-
   const [form, setForm] = useState({
-    username: "",
+    full_name: "",
     email: "",
     phone: "",
+    address: "",
     password: "",
     confirm_password: "",
   });
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+  const handleChange = (event) => {
+    setForm((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-    // 🔥 VALIDATION
     if (form.password !== form.confirm_password) {
       alert("Passwords do not match");
       return;
     }
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/register/", {
-        username: form.username,
+      await api.post("/api/register/", {
+        full_name: form.full_name,
         email: form.email,
+        phone: form.phone,
+        address: form.address,
         password: form.password,
-        phone: form.phone, // optional if backend supports
       });
 
-      alert("Registered successfully!");
-
-      // 🔥 REDIRECT TO LOGIN
       navigate("/login");
-
     } catch (error) {
       console.error(error);
-      alert("Registration failed");
+      alert(JSON.stringify(error.response?.data || { error: "Registration failed" }));
     }
   };
 
   return (
-    <div className="container">
-
-      {/* LEFT SIDE */}
-      <div className="left">
-        <div className="form-box">
+    <main className="auth-page register-page">
+      <section className="auth-panel">
+        <div className="auth-card">
+          <p className="auth-kicker">Create account</p>
           <h1>Sign Up</h1>
+          <p className="auth-copy">Register once to place custom cake requests and track orders.</p>
 
           <form onSubmit={handleSubmit}>
-
-            <div className="input-group">
+            <label className="auth-field">
+              <span>Full Name</span>
               <input
                 type="text"
-                name="username"
-                placeholder="User Name"
+                name="full_name"
+                placeholder="Enter your full name"
+                value={form.full_name}
                 onChange={handleChange}
               />
-            </div>
+            </label>
 
-            <div className="input-group">
+            <label className="auth-field">
+              <span>Email</span>
               <input
                 type="email"
                 name="email"
-                placeholder="Email"
+                placeholder="you@example.com"
+                value={form.email}
                 onChange={handleChange}
               />
-            </div>
+            </label>
 
-            <div className="input-group">
+            <label className="auth-field">
+              <span>Phone Number</span>
               <input
                 type="text"
                 name="phone"
-                placeholder="Phone Number"
+                placeholder="Contact number"
+                value={form.phone}
                 onChange={handleChange}
               />
-            </div>
+            </label>
 
-            <div className="input-group">
+            <label className="auth-field auth-field-wide">
+              <span>Address</span>
+              <textarea
+                name="address"
+                placeholder="Delivery address"
+                value={form.address}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label className="auth-field">
+              <span>Password</span>
               <input
                 type="password"
                 name="password"
-                placeholder="Password"
+                placeholder="Minimum 6 characters"
+                value={form.password}
                 onChange={handleChange}
               />
-            </div>
+            </label>
 
-            <div className="input-group">
+            <label className="auth-field">
+              <span>Confirm Password</span>
               <input
                 type="password"
                 name="confirm_password"
-                placeholder="Confirm Password"
+                placeholder="Repeat password"
+                value={form.confirm_password}
                 onChange={handleChange}
               />
-            </div>
+            </label>
 
-            <button className="btn">Register</button>
-
+            <button className="auth-submit">Register</button>
           </form>
 
-          <p className="bottom-text">
+          <p className="auth-bottom-text">
             Already have an account?{" "}
-            <span onClick={() => navigate("/login")}>
-              Login
-            </span>
+            <span onClick={() => navigate("/login")}>Login</span>
           </p>
         </div>
-      </div>
+      </section>
 
-      {/* RIGHT SIDE */}
-      <div className="right">
-        <img src={cakeImg} alt="cake" />
-      </div>
-
-    </div>
+      <section className="auth-media">
+        <img src={cakeImg} alt="Decorated cake" />
+      </section>
+    </main>
   );
 }
 

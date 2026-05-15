@@ -1,271 +1,300 @@
-import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import api from "../utils/api";
+import { clearSession, getDisplayName } from "../utils/session";
 import "./datepicker.css";
 import "./customcake.css";
-import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+
+const DEFAULT_FORM = {
+  contact_name: "",
+  contact_phone: "",
+  contact_address: "",
+  occasion: "",
+  cake_size: "",
+  flavor: "",
+  color: "",
+  shape: "",
+  quantity: "",
+  message: "",
+  special_instructions: "",
+  delivery_date: "",
+};
+
+const OCCASION_OPTIONS = ["Birthday", "Anniversary", "Other"];
+const SIZE_OPTIONS = ["500g", "1kg", "2kg", "3kg"];
+const FLAVOR_OPTIONS = ["Butter cake", "Chocolate", "Coffee", "Red velvet"];
+const SHAPE_OPTIONS = ["Round", "Square", "Heart shape", "Rectangle", "Other"];
 
 function CustomCakePage() {
-  const [formData, setFormData] = useState({
-    occasion: "",
-    cake_size: "",
-    flavor: "",
-    color: "",
-    shape: "",
-    quantity: "",
-    message: "",
-    special_instructions: "",
-    delivery_date: "",
-  });
-
-  const username = localStorage.getItem("username");
+  const [formData, setFormData] = useState(DEFAULT_FORM);
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [success, setSuccess] = useState(false);
   const [bookedDates, setBookedDates] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const displayName = getDisplayName();
   const navigate = useNavigate();
 
-  // 🔥 PROTECT PAGE (IMPORTANT)
   useEffect(() => {
-    const token = localStorage.getItem("access");
-    if (!token) {
-      navigate("/login");
-    }
-  }, [navigate]);
+    const fetchPageData = async () => {
+      try {
+        const [datesResponse, profileResponse] = await Promise.all([
+          api.get("/api/custom-cakes/booked_dates/"),
+          api.get("/api/profile/"),
+        ]);
+
+        setBookedDates((datesResponse.data || []).map((value) => new Date(value)));
+        setFormData((prev) => ({
+          ...prev,
+          contact_name: profileResponse.data?.full_name || "",
+          contact_phone: profileResponse.data?.phone || "",
+          contact_address: profileResponse.data?.address || "",
+        }));
+      } catch (error) {
+        console.error("Unable to load custom cake form data", error);
+      }
+    };
+
+    fetchPageData();
+  }, []);
 
   const handleLogout = () => {
-    localStorage.clear();
+    clearSession();
     navigate("/login");
   };
 
-  // 📅 Handle date
-  const handleDateChange = (date) => {
-    const formattedDate = date.toISOString().split("T")[0];
+  const handleDateChange = (value) => {
+    const formattedDate = value ? value.toISOString().split("T")[0] : "";
     setFormData((prev) => ({
       ...prev,
       delivery_date: formattedDate,
     }));
   };
 
-  // 📡 Fetch booked dates
-  useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/api/custom-cakes/booked_dates/")
-      .then((res) => {
-        setBookedDates(res.data.map((d) => new Date(d)));
-      })
-      .catch((err) => console.error(err));
-  }, []);
+  const isBooked = (value) =>
+    bookedDates.some((dateValue) => dateValue.toDateString() === value.toDateString());
 
-  // 🔴 Check booked
-  const isBooked = (date) =>
-    bookedDates.some(
-      (d) => d.toDateString() === date.toDateString()
-    );
-
-  // 📝 Input change
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleChange = (event) => {
+    setFormData((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }));
   };
 
-  // 🖼 Image upload
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImageFile(file);
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    setImageFile(file || null);
 
     if (file) {
       setPreview(URL.createObjectURL(file));
+    } else {
+      setPreview(null);
     }
   };
 
-  // 🚀 SUBMIT (FIXED)
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-    if (!formData.occasion || !formData.flavor || !formData.delivery_date) {
-      alert("Please fill required fields");
+    if (
+      !formData.contact_name ||
+      !formData.contact_phone ||
+      !formData.contact_address ||
+      !formData.occasion ||
+      !formData.flavor ||
+      !formData.delivery_date
+    ) {
+      alert("Please fill the required fields.");
       return;
     }
 
     setLoading(true);
 
     const data = new FormData();
-    Object.keys(formData).forEach((key) =>
-      data.append(key, formData[key])
-    );
+    Object.entries(formData).forEach(([key, value]) => data.append(key, value));
 
     if (imageFile) {
       data.append("image", imageFile);
     }
 
     try {
-      await axios.post(
-        "http://127.0.0.1:8000/api/custom-cakes/",
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access")}`, // 🔥 REQUIRED
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      setSuccess(true);
-
-      setFormData({
-        occasion: "",
-        cake_size: "",
-        flavor: "",
-        color: "",
-        shape: "",
-        quantity: "",
-        message: "",
-        special_instructions: "",
-        delivery_date: "",
+      await api.post("/api/custom-cakes/", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
+      setSuccess(true);
+      setFormData((prev) => ({
+        ...DEFAULT_FORM,
+        contact_name: prev.contact_name,
+        contact_phone: prev.contact_phone,
+        contact_address: prev.contact_address,
+      }));
       setImageFile(null);
       setPreview(null);
-
     } catch (error) {
-      console.error("ERROR:", error);
-
-      // 🔥 SHOW REAL BACKEND ERROR
-      if (error.response) {
-        alert(JSON.stringify(error.response.data));
-      } else {
-        alert("Network error. Check backend.");
-      }
+      console.error("Custom cake submit failed", error);
+      alert(JSON.stringify(error.response?.data || { error: "Unable to submit custom order" }));
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
-    <div>
+    <div className="custom-page">
       <Navbar />
 
-      {/* HEADER */}
-      <div className="top-bar">
-        <h3>Welcome, {username} 👋</h3>
+      <div className="custom-top-bar">
+        <div>
+          <span>Signed in as</span>
+          <h3>{displayName}</h3>
+        </div>
         <button onClick={handleLogout}>Logout</button>
       </div>
 
-      <div className="header">Customize your order</div>
+      <header className="custom-header">
+        <p>Custom order studio</p>
+        <h1>Customize your cake</h1>
+      </header>
 
-      <div className="wrapper">
-        <div className="card">
-
+      <main className="custom-wrapper">
+        <section className="custom-card">
           {success && (
-            <h3 style={{ color: "green" }}>
-              Order placed successfully 🎉
-            </h3>
+            <div className="success-message">
+              Order placed successfully.
+            </div>
           )}
 
-          <div className="main-container">
-
-            {/* LEFT */}
-            <div className="left-box">
+          <div className="custom-layout">
+            <aside className="upload-panel">
               <h3>Upload your design</h3>
-              <input type="file" onChange={handleImageChange} />
+              <p>Attach a reference image for colors, shape, or decoration details.</p>
+              <label className="upload-control">
+                Choose image
+                <input type="file" onChange={handleImageChange} />
+              </label>
 
-              {preview && (
-                <img src={preview} alt="preview" />
+              {preview ? (
+                <img src={preview} alt="Cake design preview" />
+              ) : (
+                <div className="upload-placeholder">Preview will appear here</div>
               )}
-            </div>
+            </aside>
 
-            {/* RIGHT */}
-            <div className="form-area">
+            <section className="form-area">
               <form onSubmit={handleSubmit}>
-
                 <div className="form-grid">
+                  <label className="field">
+                    <span>Contact Name</span>
+                    <input name="contact_name" value={formData.contact_name} onChange={handleChange} />
+                  </label>
 
-                  <div className="field">
-                    <label>Occasion</label>
-                    <input name="occasion" value={formData.occasion} onChange={handleChange} />
-                  </div>
+                  <label className="field">
+                    <span>Telephone</span>
+                    <input name="contact_phone" value={formData.contact_phone} onChange={handleChange} />
+                  </label>
 
-                  <div className="field">
-                    <label>Cake Size</label>
+                  <label className="field field-wide">
+                    <span>Address</span>
+                    <textarea name="contact_address" value={formData.contact_address} onChange={handleChange} />
+                  </label>
+
+                  <label className="field">
+                    <span>Occasion</span>
+                    <select name="occasion" value={formData.occasion} onChange={handleChange}>
+                      <option value="">Select occasion</option>
+                      {OCCASION_OPTIONS.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="field">
+                    <span>Cake Size</span>
                     <select name="cake_size" value={formData.cake_size} onChange={handleChange}>
                       <option value="">Select size</option>
-                      <option value="1kg">1kg</option>
-                      <option value="2kg">2kg</option>
+                      {SIZE_OPTIONS.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
                     </select>
-                  </div>
+                  </label>
 
-                  <div className="field">
-                    <label>Flavor</label>
-                    <input name="flavor" value={formData.flavor} onChange={handleChange} />
-                  </div>
+                  <label className="field">
+                    <span>Flavor</span>
+                    <select name="flavor" value={formData.flavor} onChange={handleChange}>
+                      <option value="">Select flavor</option>
+                      {FLAVOR_OPTIONS.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
 
-                  <div className="field">
-                    <label>Color</label>
+                  <label className="field">
+                    <span>Color</span>
                     <input name="color" value={formData.color} onChange={handleChange} />
-                  </div>
+                  </label>
 
-                  <div className="field">
-                    <label>Shape</label>
-                    <input name="shape" value={formData.shape} onChange={handleChange} />
-                  </div>
+                  <label className="field">
+                    <span>Shape</span>
+                    <select name="shape" value={formData.shape} onChange={handleChange}>
+                      <option value="">Select shape</option>
+                      {SHAPE_OPTIONS.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
 
-                  <div className="field">
-                    <label>Quantity</label>
+                  <label className="field">
+                    <span>Quantity</span>
                     <input name="quantity" value={formData.quantity} onChange={handleChange} />
-                  </div>
+                  </label>
 
-                  <div className="field">
-                    <label>Message on cake</label>
+                  <label className="field field-wide">
+                    <span>Message on cake</span>
                     <textarea name="message" value={formData.message} onChange={handleChange} />
-                  </div>
+                  </label>
 
-                  <div className="field">
-                    <label>Special Instructions</label>
+                  <label className="field field-wide">
+                    <span>Special Instructions</span>
                     <textarea name="special_instructions" value={formData.special_instructions} onChange={handleChange} />
+                  </label>
+
+                  <div className="delivery-highlight field-wide">
+                    We deliver around Badulla town only.
                   </div>
 
                   <div className="field">
-                    <label>Delivery Date</label>
+                    <span>Delivery Date</span>
                     <DatePicker
                       selected={formData.delivery_date ? new Date(formData.delivery_date) : null}
                       onChange={handleDateChange}
                       excludeDates={bookedDates}
                       minDate={new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)}
-                      dayClassName={(date) => isBooked(date) ? "booked-date" : ""}
-                      renderDayContents={(day, date) =>
-                        isBooked(date)
-                          ? <span title="Already booked">{day}</span>
-                          : <span>{day}</span>
+                      dayClassName={(value) => (isBooked(value) ? "booked-date" : "")}
+                      renderDayContents={(day, value) =>
+                        isBooked(value) ? <span title="Already booked">{day}</span> : <span>{day}</span>
                       }
                       placeholderText="Select date"
                     />
 
-                    <p style={{ color: "red" }}>
-                      Minimum 2 days advance booking required
+                    <p className="date-note">
+                      Minimum 2 days advance booking required.
                     </p>
                   </div>
-
                 </div>
 
                 <button className="submit-btn" disabled={loading}>
                   {loading ? "Submitting..." : "Submit"}
                 </button>
-
               </form>
-            </div>
-
+            </section>
           </div>
-
-        </div>
-      </div>
+        </section>
+      </main>
 
       <Footer />
     </div>

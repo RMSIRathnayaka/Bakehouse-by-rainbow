@@ -1,37 +1,25 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "./profile.css";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import api from "../utils/api";
+import { clearSession, getDisplayName } from "../utils/session";
+import "./profile.css";
 
 function ProfilePage() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const displayName = getDisplayName();
 
-  const username = localStorage.getItem("username");
-
-  // 🔴 Logout
   const handleLogout = () => {
-    localStorage.removeItem("access");
-    localStorage.removeItem("refresh");
-    localStorage.removeItem("username");
-
+    clearSession();
     navigate("/login");
   };
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(
-          "http://127.0.0.1:8000/api/profile/",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access")}`,
-            },
-          }
-        );
-
+        const res = await api.get("/api/profile/");
         setUser(res.data);
       } catch (error) {
         console.error("Error fetching profile", error);
@@ -42,60 +30,45 @@ function ProfilePage() {
   }, []);
 
   return (
-    <div>
+    <div className="profile-page">
       <Navbar />
 
-      {/* 🔥 SIMPLE HEADER */}
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        padding: "15px 25px",
-        background: "#f8e6ef"
-      }}>
-        <h3>Welcome, {username} 👋</h3>
+      <div className="profile-top-bar">
+        <div>
+          <span>Signed in as</span>
+          <h3>{displayName}</h3>
+        </div>
 
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: "8px 15px",
-            background: "#7a1f57",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
-        >
-          Logout
-        </button>
+        <button onClick={handleLogout}>Logout</button>
       </div>
 
-      {/* PROFILE UI */}
-      <div className="profile-container">
-        <div className="profile-card">
-
+      <main className="profile-container">
+        <section className="profile-card">
           {!user ? (
-            <p>Loading...</p>
+            <p className="profile-loading">Loading...</p>
           ) : (
             <>
               <div className="profile-avatar">
-                {user.username.charAt(0).toUpperCase()}
+                {(user.display_name || user.email).charAt(0).toUpperCase()}
               </div>
 
               <div className="profile-name">
-                {user.username}
+                {user.display_name}
               </div>
 
               <div className="profile-info">
+                <p><strong>Full Name:</strong> {user.full_name}</p>
                 <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Phone:</strong> {user.phone}</p>
+                <p><strong>Phone:</strong> {user.phone || "Not added"}</p>
+                <p><strong>Address:</strong> {user.address || "Not added"}</p>
+                <p><strong>Role:</strong> {user.role}</p>
               </div>
             </>
           )}
+        </section>
+      </main>
 
-        </div>
-      </div>
       <Footer />
-
     </div>
   );
 }

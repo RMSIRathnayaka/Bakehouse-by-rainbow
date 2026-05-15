@@ -1,85 +1,178 @@
-.container {
-  display: flex;
-  height: 100vh;
-  font-family: "Segoe UI", sans-serif;
+.auth-page {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: minmax(420px, 0.9fr) 1.1fr;
+  background: var(--color-soft);
 }
 
-/* LEFT SIDE */
-.left {
-  width: 50%;
-  background: #e6c3d2;
-  display: flex;
-  justify-content: center;
+.auth-panel {
+  display: grid;
   align-items: center;
+  padding: clamp(28px, 6vw, 76px);
 }
 
-.form-box {
-  width: 65%;
+.auth-card {
+  width: min(100%, 470px);
 }
 
-.form-box h1 {
-  font-size: 40px;
-  margin-bottom: 30px;
-  font-weight: bold;
+.auth-kicker {
+  margin: 0 0 12px;
+  color: var(--color-berry);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-/* INPUT BOX */
-.input-group {
-  margin-bottom: 20px;
+.auth-card h1 {
+  margin: 0;
+  color: var(--color-berry-dark);
+  font-size: clamp(44px, 6vw, 68px);
+  line-height: 0.95;
+}
+
+.auth-copy {
+  margin: 16px 0 32px;
+  color: var(--color-muted);
+  font-family: "Segoe UI", sans-serif;
+  line-height: 1.7;
+}
+
+.auth-card form {
+  display: grid;
+  gap: 18px;
+}
+
+.auth-field {
+  display: grid;
+  gap: 8px;
+  color: var(--color-ink);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.auth-field input,
+.auth-input {
+  width: 100%;
+}
+
+.auth-field input {
+  min-height: 48px;
+  padding: 0 15px;
+  color: var(--color-ink);
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  outline: 0;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.auth-input {
   position: relative;
 }
 
-.input-group input {
-  width: 100%;
-  padding: 12px 40px 12px 12px;
-  border: none;
-  border-radius: 6px;
-  outline: none;
+.auth-input input {
+  padding-right: 44px;
 }
 
-/* ICON */
-.input-group span {
+.auth-input svg {
   position: absolute;
-  right: 10px;
-  top: 10px;
-  font-size: 18px;
+  right: 15px;
+  top: 50%;
+  color: var(--color-berry);
+  transform: translateY(-50%);
 }
 
-/* BUTTON */
-.btn {
-  width: 100%;
-  padding: 12px;
-  background: #d67ca5;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+.auth-field input:focus {
+  border-color: rgba(143, 47, 85, 0.55);
+  box-shadow: 0 0 0 4px rgba(143, 47, 85, 0.08);
 }
 
-.btn:hover {
-  background: #c76491;
+.auth-submit {
+  min-height: 50px;
+  margin-top: 6px;
+  color: #fff;
+  background: var(--color-berry-dark);
+  border: 1px solid var(--color-berry-dark);
+  border-radius: 999px;
+  box-shadow: 0 14px 28px rgba(95, 24, 55, 0.2);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
-/* TEXT */
-.bottom-text {
-  margin-top: 15px;
+.auth-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 34px rgba(95, 24, 55, 0.24);
+}
+
+.auth-bottom-text {
+  margin: 22px 0 0;
+  color: var(--color-muted);
+  font-family: "Segoe UI", sans-serif;
   font-size: 14px;
 }
 
-.bottom-text span {
-  color: #7a1f57;
-  font-weight: bold;
+.auth-bottom-text span {
+  color: var(--color-berry-dark);
+  font-weight: 800;
   cursor: pointer;
 }
 
-/* RIGHT SIDE */
-.right {
-  width: 50%;
+.auth-media {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
-.right img {
+.auth-media::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 248, 245, 0.16), rgba(36, 16, 25, 0.2));
+  content: "";
+}
+
+.auth-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+@media (max-width: 860px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-panel {
+    order: 2;
+  }
+
+  .auth-media {
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 560px) {
+  .auth-page {
+    min-height: 100svh;
+  }
+
+  .auth-panel {
+    padding: 30px 18px 42px;
+  }
+
+  .auth-card h1 {
+    font-size: clamp(38px, 14vw, 52px);
+  }
+
+  .auth-media {
+    min-height: 190px;
+  }
+
+  .auth-submit {
+    width: 100%;
+  }
 }
